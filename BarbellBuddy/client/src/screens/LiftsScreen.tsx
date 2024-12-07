@@ -18,7 +18,7 @@ interface Lift {
   description: string;
 }
 
-const API_URL = 'http://192.168.64.153:3000';
+const API_URL = 'http://localhost:3000';
 
 const LiftsScreen = () => {
   const [lifts, setLifts] = useState<Lift[]>([]);

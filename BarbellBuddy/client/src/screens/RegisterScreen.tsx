@@ -9,7 +9,7 @@ import { RootStackParamList } from '../types/navigation';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
 
-const API_URL = 'http://192.168.64.153:3000';
+const API_URL = 'http://localhost:3000';
 
 const RegisterScreen = () => {
   const [username, setUsername] = useState('');

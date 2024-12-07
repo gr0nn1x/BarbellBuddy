@@ -1,12 +1,12 @@
 import { Table, Column, Model, ForeignKey, BelongsTo, DataType } from 'sequelize-typescript';
 import { User } from './User';
 
-@Table
-export class Lift extends Model {
+@Table({ tableName: 'lifts' })
+export class Lift extends Model<Lift> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   })
   id!: string;
 
@@ -24,22 +24,22 @@ export class Lift extends Model {
   type!: string;
 
   @Column({
-    type: DataType.FLOAT,
-    allowNull: false
-  })
-  weight!: number;
-
-  @Column({
-    type: DataType.INTEGER,
+    type: DataType.SMALLINT,
     allowNull: false
   })
   reps!: number;
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.SMALLINT,
     allowNull: false
   })
   sets!: number;
+
+  @Column({
+    type: DataType.SMALLINT,
+    allowNull: false
+  })
+  weight!: number;
 
   @Column({
     type: DataType.DATE,
@@ -48,8 +48,7 @@ export class Lift extends Model {
   date!: Date;
 
   @Column({
-    type: DataType.FLOAT,
-    allowNull: true,
+    type: DataType.SMALLINT,
     validate: {
       min: 1,
       max: 10
@@ -57,10 +56,7 @@ export class Lift extends Model {
   })
   rpe!: number;
 
-  @Column({
-    type: DataType.TEXT,
-    allowNull: true
-  })
+  @Column(DataType.STRING)
   description!: string;
 
   @BelongsTo(() => User)

@@ -18,7 +18,7 @@ __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
     }),
     __metadata("design:type", String)
 ], Achievement.prototype, "id", void 0);
@@ -42,6 +42,6 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Achievement.prototype, "user", void 0);
 Achievement = __decorate([
-    sequelize_typescript_1.Table
+    (0, sequelize_typescript_1.Table)({ tableName: 'achievements' })
 ], Achievement);
 exports.Achievement = Achievement;

@@ -9,7 +9,7 @@ import { ProgramsStackParamList } from '../navigation/types';
 
 type CreateProgramScreenNavigationProp = NativeStackNavigationProp<ProgramsStackParamList, 'CreateProgram'>;
 
-const API_URL = 'http://192.168.64.153:3000';
+const API_URL = 'http://localhost:3000';
 
 interface WorkoutDay {
   day: string;

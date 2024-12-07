@@ -1,12 +1,12 @@
 import { Table, Column, Model, ForeignKey, BelongsTo, DataType } from 'sequelize-typescript';
 import { User } from './User';
 
-@Table
-export class Friend extends Model {
+@Table({ tableName: 'friends' })
+export class Friend extends Model<Friend> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   })
   id!: string;
 
@@ -23,12 +23,6 @@ export class Friend extends Model {
     allowNull: false
   })
   friendId!: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  friendUsername!: string;
 
   @BelongsTo(() => User, 'userId')
   user!: User;

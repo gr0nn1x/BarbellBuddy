@@ -3,18 +3,20 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FriendsStackParamList } from '../navigation/types';
+import { FriendsStackParamList, MainTabParamList } from '../navigation/types';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
 import { Friend } from '../types/friend';
 
-const API_URL = 'http://192.168.64.153:3000'; // Use this for iOS simulator
+const API_URL = 'http://localhost:3000'; // Use this for iOS simulator
 // const API_URL = 'http://10.0.2.2:3000'; // Use this for Android emulator
+
+type AddFriendScreenNavigationProp = NativeStackNavigationProp<FriendsStackParamList & MainTabParamList, 'AddFriend'>;
 
 const AddFriendScreen: React.FC = () => {
   const [friendUsername, setFriendUsername] = useState('');
-  const navigation = useNavigation<NativeStackNavigationProp<FriendsStackParamList>>();
+  const navigation = useNavigation<AddFriendScreenNavigationProp>();
 
   const handleAddFriend = async () => {
     if (!friendUsername.trim()) {
@@ -24,7 +26,6 @@ const AddFriendScreen: React.FC = () => {
 
     try {
       const token = await AsyncStorage.getItem('userToken');
-      console.log('Sending request with friendUsername:', friendUsername.trim());
       const response = await axios.post<Friend>(
         `${API_URL}/api/friends`,
         { friendUsername: friendUsername.trim() },
@@ -36,12 +37,19 @@ const AddFriendScreen: React.FC = () => {
         }
       );
 
-      console.log('Response:', response.data);
-
       if (response.status === 201 && response.data) {
-        Alert.alert('Success', 'Friend added successfully');
-        setFriendUsername('');
-        navigation.navigate('FriendsMain', { newFriend: response.data });
+        Alert.alert('Success', 'Friend added successfully', [
+          {
+            text: 'OK',
+            onPress: () => {
+              setFriendUsername('');
+              navigation.navigate('Friends', { 
+                screen: 'FriendsMain', 
+                params: { newFriend: response.data } 
+              });
+            }
+          }
+        ]);
       } else {
         throw new Error('Unexpected response from server');
       }

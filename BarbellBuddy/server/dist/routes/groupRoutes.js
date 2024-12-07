@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const Group_1 = require("../models/Group");
+const UserGroup_1 = require("../models/UserGroup");
 const User_1 = require("../models/User");
 const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
@@ -15,23 +16,17 @@ router.get('/', auth_1.authenticateToken, async (req, res) => {
         if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.id)) {
             return res.status(401).json({ message: "User ID not found in token" });
         }
-        const user = await User_1.User.findByPk(req.user.id, {
-            include: [
-                {
-                    model: Group_1.Group,
-                    as: 'groups',
-                    through: { attributes: [] }
-                },
-                {
-                    model: Group_1.Group,
-                    as: 'createdGroups'
-                }
-            ]
+        const userGroups = await UserGroup_1.UserGroup.findAll({
+            where: { userId: req.user.id },
+            include: [{ model: Group_1.Group }]
         });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        const groups = [...user.groups, ...user.createdGroups];
+        const createdGroups = await Group_1.Group.findAll({
+            where: { creatorId: req.user.id }
+        });
+        const groups = [
+            ...userGroups.map(ug => ug.groupId),
+            ...createdGroups
+        ];
         res.json(groups);
     }
     catch (error) {
@@ -49,11 +44,15 @@ router.post('/', auth_1.authenticateToken, async (req, res) => {
         if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.id)) {
             return res.status(401).json({ message: "User ID not found in token" });
         }
+        const { name } = req.body;
+        if (!name || typeof name !== 'string') {
+            return res.status(400).json({ message: "Group name is required and must be a string" });
+        }
         const newGroup = await Group_1.Group.create({
-            name: req.body.name,
+            name: name,
             creatorId: req.user.id
         });
-        await Group_1.UserGroup.create({
+        await UserGroup_1.UserGroup.create({
             userId: req.user.id,
             groupId: newGroup.id
         });
@@ -75,7 +74,11 @@ router.post('/:groupId/users', auth_1.authenticateToken, async (req, res) => {
             return res.status(401).json({ message: "User ID not found in token" });
         }
         const { username } = req.body;
-        const group = await Group_1.Group.findByPk(req.params.groupId);
+        const groupId = parseInt(req.params.groupId);
+        if (isNaN(groupId)) {
+            return res.status(400).json({ message: "Invalid group ID" });
+        }
+        const group = await Group_1.Group.findByPk(groupId);
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
@@ -86,10 +89,15 @@ router.post('/:groupId/users', auth_1.authenticateToken, async (req, res) => {
         if (!userToAdd) {
             return res.status(404).json({ message: "User not found" });
         }
-        await Group_1.UserGroup.create({
-            userId: userToAdd.id,
-            groupId: group.id
+        const [userGroup, created] = await UserGroup_1.UserGroup.findOrCreate({
+            where: {
+                userId: userToAdd.id,
+                groupId: group.id
+            }
         });
+        if (!created) {
+            return res.status(400).json({ message: "User is already in the group" });
+        }
         res.status(201).json({ message: "User added to group successfully" });
     }
     catch (error) {
@@ -107,7 +115,11 @@ router.get('/:groupId', auth_1.authenticateToken, async (req, res) => {
         if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.id)) {
             return res.status(401).json({ message: "User ID not found in token" });
         }
-        const group = await Group_1.Group.findByPk(req.params.groupId, {
+        const groupId = parseInt(req.params.groupId);
+        if (isNaN(groupId)) {
+            return res.status(400).json({ message: "Invalid group ID" });
+        }
+        const group = await Group_1.Group.findByPk(groupId, {
             include: [
                 {
                     model: User_1.User,
@@ -136,6 +148,44 @@ router.get('/:groupId', auth_1.authenticateToken, async (req, res) => {
         console.error('Error retrieving group details:', error);
         res.status(500).json({
             message: "Error retrieving group details",
+            error: error.message
+        });
+    }
+});
+// DELETE remove user from group
+router.delete('/:groupId/users/:userId', auth_1.authenticateToken, async (req, res) => {
+    var _a;
+    try {
+        if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.id)) {
+            return res.status(401).json({ message: "User ID not found in token" });
+        }
+        const groupId = parseInt(req.params.groupId);
+        const userIdToRemove = parseInt(req.params.userId);
+        if (isNaN(groupId) || isNaN(userIdToRemove)) {
+            return res.status(400).json({ message: "Invalid group ID or user ID" });
+        }
+        const group = await Group_1.Group.findByPk(groupId);
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+        if (group.creatorId !== req.user.id && req.user.id !== userIdToRemove) {
+            return res.status(403).json({ message: "Not authorized to remove users from this group" });
+        }
+        const deleted = await UserGroup_1.UserGroup.destroy({
+            where: {
+                userId: userIdToRemove,
+                groupId: group.id
+            }
+        });
+        if (deleted === 0) {
+            return res.status(404).json({ message: "User is not in the group" });
+        }
+        res.status(200).json({ message: "User removed from group successfully" });
+    }
+    catch (error) {
+        console.error('Error removing user from group:', error);
+        res.status(400).json({
+            message: "Error removing user from group",
             error: error.message
         });
     }

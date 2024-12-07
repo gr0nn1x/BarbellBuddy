@@ -18,7 +18,7 @@ __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
     }),
     __metadata("design:type", String)
 ], Friend.prototype, "id", void 0);
@@ -39,13 +39,6 @@ __decorate([
     __metadata("design:type", String)
 ], Friend.prototype, "friendId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.STRING,
-        allowNull: false
-    }),
-    __metadata("design:type", String)
-], Friend.prototype, "friendUsername", void 0);
-__decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => User_1.User, 'userId'),
     __metadata("design:type", User_1.User)
 ], Friend.prototype, "user", void 0);
@@ -54,6 +47,6 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Friend.prototype, "friend", void 0);
 Friend = __decorate([
-    sequelize_typescript_1.Table
+    (0, sequelize_typescript_1.Table)({ tableName: 'friends' })
 ], Friend);
 exports.Friend = Friend;

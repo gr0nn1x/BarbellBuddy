@@ -10,7 +10,7 @@ import { User } from '../types/user';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const API_URL = 'http://192.168.64.153:3000';
+const API_URL = 'http://localhost:3000';
 
 const ProfileScreen = () => {
   const [user, setUser] = useState<User | null>(null);

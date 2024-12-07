@@ -1,25 +1,23 @@
 import { Sequelize } from 'sequelize-typescript';
-import { User } from '../models/User';
-import { Lift } from '../models/Lift';
-import { Achievement } from '../models/Achievement';
-import { Friend } from '../models/Friend';
-import { Program } from '../models/Program';
-import { Group, UserGroup } from '../models/Group';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config();
 
 const sequelize = new Sequelize({
-  database: 'GymDB_ver2',
+  database: process.env.DB_NAME || 'DB5',
+  username: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'adminadmin',
+  host: process.env.DB_HOST || 'localhost',
   dialect: 'postgres',
-  username: 'postgres',
-  password: 'adminadmin',
-  host: 'localhost',
-  models: [User, Lift, Achievement, Friend, Program, Group, UserGroup],
   logging: false,
   pool: {
     max: 5,
     min: 0,
     acquire: 30000,
     idle: 10000
-  }
+  },
+  models: [path.join(__dirname, '..', 'models')] // This will automatically load all models from the models directory
 });
 
 export default sequelize;

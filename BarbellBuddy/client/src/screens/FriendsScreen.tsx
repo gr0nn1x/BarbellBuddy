@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Alert, RefreshControl, ScrollView, Text } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FriendsStackParamList } from '../navigation/types';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { FriendsStackParamList, MainTabParamList } from '../navigation/types';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Friend, Lift } from '../types/friend';
@@ -10,22 +10,24 @@ import { Button, Card, Avatar, ActivityIndicator } from 'react-native-paper';
 import { colors } from '../theme/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const API_URL = 'http://192.168.64.153:3000'; // Use this for iOS simulator
+const API_URL = 'http://localhost:3000'; // Use this for iOS simulator
 // const API_URL = 'http://10.0.2.2:3000'; // Use this for Android emulator
+
+type FriendsScreenNavigationProp = StackNavigationProp<FriendsStackParamList & MainTabParamList, 'FriendsMain'>;
 
 const FriendsScreen: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<FriendsStackParamList>>();
+  const navigation = useNavigation<FriendsScreenNavigationProp>();
 
   const fetchFriends = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await axios.get<Friend[]>(`${API_URL}/api/friends/details`, {
+      const response = await axios.get<Friend[]>(`${API_URL}/api/friends`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setFriends(response.data);
+      setFriends(response.data.sort((a, b) => a.friendUsername.localeCompare(b.friendUsername)));
     } catch (error) {
       console.error('Error fetching friends:', error);
       Alert.alert('Error', 'Failed to fetch friends. Please try again.');
@@ -47,18 +49,18 @@ const FriendsScreen: React.FC = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const state = navigation.getState();
-      const friendsMainRoute = state.routes.find(route => route.name === 'FriendsMain');
-      const newFriend = friendsMainRoute?.params?.newFriend as Friend | undefined;
-      
-      if (newFriend) {
-        setFriends(prevFriends => {
-          if (!prevFriends.some(friend => friend.id === newFriend.id)) {
-            return [...prevFriends, newFriend];
-          }
-          return prevFriends;
-        });
-        navigation.setParams({ newFriend: undefined });
+      const params = navigation.getState().routes.find(route => route.name === 'FriendsMain')?.params;
+      if (params && 'newFriend' in params) {
+        const newFriend = params.newFriend as Friend;
+        if (newFriend) {
+          setFriends(prevFriends => {
+            if (!prevFriends.some(friend => friend.id === newFriend.id)) {
+              return [...prevFriends, newFriend];
+            }
+            return prevFriends;
+          });
+          navigation.setParams({ newFriend: undefined });
+        }
       }
     });
 
@@ -67,6 +69,11 @@ const FriendsScreen: React.FC = () => {
 
   const handleAddFriend = () => {
     navigation.navigate('AddFriend');
+  };
+
+  const handleChat = (friendId: string, friendUsername: string) => {
+    console.log(`Navigating to chat with friend: ${friendUsername}, ID: ${friendId}`);
+    navigation.navigate('Chat', { friendId, friendUsername });
   };
 
   const onRefresh = useCallback(() => {
@@ -128,6 +135,17 @@ const FriendsScreen: React.FC = () => {
           {renderMaxLifts(friend.maxLifts)}
         </View>
       </Card.Content>
+      <Card.Actions>
+        <Button
+          mode="contained"
+          onPress={() => handleChat(friend.friendId, friend.friendUsername)}
+          icon={({ size, color }) => (
+            <Icon name="chat" size={size} color={color} />
+          )}
+        >
+          Chat
+        </Button>
+      </Card.Actions>
     </Card>
   );
 

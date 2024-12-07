@@ -1,8 +1,9 @@
 import { Table, Column, Model, ForeignKey, BelongsTo, BelongsToMany, DataType } from 'sequelize-typescript';
 import { User } from './User';
+import { UserGroup } from './UserGroup';
 
-@Table
-export class Group extends Model {
+@Table({ tableName: 'groups' })
+export class Group extends Model<Group> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -12,14 +13,14 @@ export class Group extends Model {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false
+    allowNull: false,
   })
   name!: string;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
-    allowNull: false
+    allowNull: false,
   })
   creatorId!: string;
 
@@ -28,22 +29,5 @@ export class Group extends Model {
 
   @BelongsToMany(() => User, () => UserGroup)
   members!: User[];
-}
-
-@Table
-export class UserGroup extends Model {
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false
-  })
-  userId!: string;
-
-  @ForeignKey(() => Group)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false
-  })
-  groupId!: string;
 }
 

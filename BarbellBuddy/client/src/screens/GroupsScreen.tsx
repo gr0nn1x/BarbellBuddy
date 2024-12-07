@@ -15,7 +15,7 @@ interface Group {
 
 type GroupsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Groups'>;
 
-const API_URL = 'http://192.168.64.153:3000';
+const API_URL = 'http://localhost:3000';
 
 const GroupsScreen = () => {
   const [groups, setGroups] = useState<Group[]>([]);

@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 
-const API_URL = "http://192.168.64.153:3000"; // Use this for iOS
+const API_URL = "http://localhost:3000"; // Use this for iOS
 
 const AddLiftScreen = () => {
   const [type, setType] = useState("");

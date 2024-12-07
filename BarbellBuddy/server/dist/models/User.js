@@ -18,9 +18,10 @@ const sequelize_typescript_1 = require("sequelize-typescript");
 const Lift_1 = require("./Lift");
 const Achievement_1 = require("./Achievement");
 const Friend_1 = require("./Friend");
-const Program_1 = require("./Program");
-const Group_1 = require("./Group");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const Group_1 = require("./Group");
+const UserGroup_1 = require("./UserGroup");
+const Chat_1 = require("./Chat");
 let User = User_1 = class User extends sequelize_typescript_1.Model {
     static async hashPassword(instance) {
         if (instance.changed('password')) {
@@ -36,7 +37,7 @@ __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
     }),
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
@@ -74,13 +75,6 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "dayCount", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.DATE,
-        defaultValue: sequelize_typescript_1.DataType.NOW
-    }),
-    __metadata("design:type", Date)
-], User.prototype, "registrationDate", void 0);
-__decorate([
     (0, sequelize_typescript_1.HasMany)(() => Lift_1.Lift),
     __metadata("design:type", Array)
 ], User.prototype, "lifts", void 0);
@@ -89,21 +83,29 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "achievements", void 0);
 __decorate([
+    (0, sequelize_typescript_1.HasMany)(() => Friend_1.Friend, 'userId'),
+    __metadata("design:type", Array)
+], User.prototype, "friendships", void 0);
+__decorate([
     (0, sequelize_typescript_1.BelongsToMany)(() => User_1, () => Friend_1.Friend, 'userId', 'friendId'),
     __metadata("design:type", Array)
 ], User.prototype, "friends", void 0);
 __decorate([
-    (0, sequelize_typescript_1.HasMany)(() => Program_1.Program),
-    __metadata("design:type", Array)
-], User.prototype, "programs", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsToMany)(() => Group_1.Group, () => Group_1.UserGroup),
-    __metadata("design:type", Array)
-], User.prototype, "groups", void 0);
-__decorate([
     (0, sequelize_typescript_1.HasMany)(() => Group_1.Group, 'creatorId'),
     __metadata("design:type", Array)
 ], User.prototype, "createdGroups", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsToMany)(() => Group_1.Group, () => UserGroup_1.UserGroup),
+    __metadata("design:type", Array)
+], User.prototype, "groups", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => Chat_1.Chat, 'senderId'),
+    __metadata("design:type", Array)
+], User.prototype, "sentChats", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => Chat_1.Chat, 'receiverId'),
+    __metadata("design:type", Array)
+], User.prototype, "receivedChats", void 0);
 __decorate([
     sequelize_typescript_1.BeforeCreate,
     sequelize_typescript_1.BeforeUpdate,

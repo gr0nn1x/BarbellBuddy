@@ -1,8 +1,8 @@
 import { Table, Column, Model, ForeignKey, BelongsTo, DataType } from 'sequelize-typescript';
 import { User } from './User';
 
-@Table
-export class Program extends Model {
+@Table({ tableName: 'programs' })
+export class Program extends Model<Program> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -12,26 +12,14 @@ export class Program extends Model {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false
+    allowNull: false,
   })
   name!: string;
-
-  @Column({
-    type: DataType.JSON,
-    allowNull: false
-  })
-  workouts!: any[];
-
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: false
-  })
-  isPrivate!: boolean;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
-    allowNull: false
+    allowNull: false,
   })
   userId!: string;
 

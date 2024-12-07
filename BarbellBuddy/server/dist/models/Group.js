@@ -9,9 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserGroup = exports.Group = void 0;
+exports.Group = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const User_1 = require("./User");
+const UserGroup_1 = require("./UserGroup");
 let Group = class Group extends sequelize_typescript_1.Model {
 };
 __decorate([
@@ -25,7 +26,7 @@ __decorate([
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.STRING,
-        allowNull: false
+        allowNull: false,
     }),
     __metadata("design:type", String)
 ], Group.prototype, "name", void 0);
@@ -33,7 +34,7 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => User_1.User),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
-        allowNull: false
+        allowNull: false,
     }),
     __metadata("design:type", String)
 ], Group.prototype, "creatorId", void 0);
@@ -42,32 +43,10 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Group.prototype, "creator", void 0);
 __decorate([
-    (0, sequelize_typescript_1.BelongsToMany)(() => User_1.User, () => UserGroup),
+    (0, sequelize_typescript_1.BelongsToMany)(() => User_1.User, () => UserGroup_1.UserGroup),
     __metadata("design:type", Array)
 ], Group.prototype, "members", void 0);
 Group = __decorate([
-    sequelize_typescript_1.Table
+    (0, sequelize_typescript_1.Table)({ tableName: 'groups' })
 ], Group);
 exports.Group = Group;
-let UserGroup = class UserGroup extends sequelize_typescript_1.Model {
-};
-__decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => User_1.User),
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.UUID,
-        allowNull: false
-    }),
-    __metadata("design:type", String)
-], UserGroup.prototype, "userId", void 0);
-__decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => Group),
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.UUID,
-        allowNull: false
-    }),
-    __metadata("design:type", String)
-], UserGroup.prototype, "groupId", void 0);
-UserGroup = __decorate([
-    sequelize_typescript_1.Table
-], UserGroup);
-exports.UserGroup = UserGroup;

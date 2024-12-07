@@ -12,11 +12,12 @@ const authenticateToken = (req, res, next) => {
         if (!token) {
             return res.status(401).json({ message: 'No token provided' });
         }
-        jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'fallback_secret', (err, user) => {
+        jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'fallback_secret', (err, decoded) => {
             if (err) {
                 return res.status(403).json({ message: 'Invalid or expired token' });
             }
-            req.user = user;
+            req.user = decoded;
+            req.userId = decoded.id;
             next();
         });
     }

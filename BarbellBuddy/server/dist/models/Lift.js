@@ -18,7 +18,7 @@ __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.UUID,
         defaultValue: sequelize_typescript_1.DataType.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
     }),
     __metadata("design:type", String)
 ], Lift.prototype, "id", void 0);
@@ -39,25 +39,25 @@ __decorate([
 ], Lift.prototype, "type", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.FLOAT,
-        allowNull: false
-    }),
-    __metadata("design:type", Number)
-], Lift.prototype, "weight", void 0);
-__decorate([
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.INTEGER,
+        type: sequelize_typescript_1.DataType.SMALLINT,
         allowNull: false
     }),
     __metadata("design:type", Number)
 ], Lift.prototype, "reps", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.INTEGER,
+        type: sequelize_typescript_1.DataType.SMALLINT,
         allowNull: false
     }),
     __metadata("design:type", Number)
 ], Lift.prototype, "sets", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.SMALLINT,
+        allowNull: false
+    }),
+    __metadata("design:type", Number)
+], Lift.prototype, "weight", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.DATE,
@@ -67,8 +67,7 @@ __decorate([
 ], Lift.prototype, "date", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.FLOAT,
-        allowNull: true,
+        type: sequelize_typescript_1.DataType.SMALLINT,
         validate: {
             min: 1,
             max: 10
@@ -77,10 +76,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Lift.prototype, "rpe", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_typescript_1.DataType.TEXT,
-        allowNull: true
-    }),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
 ], Lift.prototype, "description", void 0);
 __decorate([
@@ -88,6 +84,6 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Lift.prototype, "user", void 0);
 Lift = __decorate([
-    sequelize_typescript_1.Table
+    (0, sequelize_typescript_1.Table)({ tableName: 'lifts' })
 ], Lift);
 exports.Lift = Lift;

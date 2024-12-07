@@ -2,16 +2,17 @@ import { Table, Column, Model, HasMany, BelongsToMany, DataType, BeforeCreate, B
 import { Lift } from './Lift';
 import { Achievement } from './Achievement';
 import { Friend } from './Friend';
-import { Program } from './Program';
-import { Group, UserGroup } from './Group';
 import bcrypt from 'bcrypt';
+import { Group } from './Group';
+import { UserGroup } from './UserGroup';
+import { Chat } from './Chat';
 
 @Table
 export class User extends Model {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   })
   id!: string;
 
@@ -44,29 +45,29 @@ export class User extends Model {
   })
   dayCount!: number;
 
-  @Column({
-    type: DataType.DATE,
-    defaultValue: DataType.NOW
-  })
-  registrationDate!: Date;
-
   @HasMany(() => Lift)
   lifts!: Lift[];
 
   @HasMany(() => Achievement)
   achievements!: Achievement[];
 
+  @HasMany(() => Friend, 'userId')
+  friendships!: Friend[];
+
   @BelongsToMany(() => User, () => Friend, 'userId', 'friendId')
   friends!: User[];
 
-  @HasMany(() => Program)
-  programs!: Program[];
+  @HasMany(() => Group, 'creatorId')
+  createdGroups!: Group[];
 
   @BelongsToMany(() => Group, () => UserGroup)
   groups!: Group[];
 
-  @HasMany(() => Group, 'creatorId')
-  createdGroups!: Group[];
+  @HasMany(() => Chat, 'senderId')
+  sentChats!: Chat[];
+
+  @HasMany(() => Chat, 'receiverId')
+  receivedChats!: Chat[];
 
   @BeforeCreate
   @BeforeUpdate

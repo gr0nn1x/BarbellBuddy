@@ -27,12 +27,42 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.64.153:3000/api/users/login",
+        "http://localhost:3000/api/users/login",
         { email, password }
       );
-      await AsyncStorage.setItem("userToken", response.data.token);
+
+      const { token, user } = response.data;
+    
+      if (!token || !user || !user.id) {
+        console.error('Invalid server response:', response.data);
+        throw new Error('Invalid response structure');
+      }
+
+      // Ensure the user ID is stored as a plain string
+      const userId = user.id.toString();
+    
+      console.log('Storing auth data:', { token, userId });
+    
+      await Promise.all([
+        AsyncStorage.setItem("userToken", token),
+        AsyncStorage.setItem("userId", userId)
+      ]);
+
+      // Verify the data was stored correctly
+      const [storedToken, storedUserId] = await Promise.all([
+        AsyncStorage.getItem("userToken"),
+        AsyncStorage.getItem("userId")
+      ]);
+
+      console.log('Verified stored data:', { storedToken, storedUserId });
+
+      if (!storedToken || !storedUserId) {
+        throw new Error("Failed to store authentication data");
+      }
+
       navigation.replace("Main");
     } catch (error) {
+      console.error('Login error:', error);
       const axiosError = error as AxiosError<{ message: string }>;
       Alert.alert(
         "Login Failed",
@@ -50,6 +80,8 @@ const LoginScreen = () => {
         placeholderTextColor={colors.onSurface}
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -109,3 +141,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
+

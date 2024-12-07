@@ -1,12 +1,12 @@
 import { Table, Column, Model, ForeignKey, BelongsTo, DataType } from 'sequelize-typescript';
 import { User } from './User';
 
-@Table
-export class Achievement extends Model {
+@Table({ tableName: 'achievements' })
+export class Achievement extends Model<Achievement> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   })
   id!: string;
 

@@ -1,5 +1,6 @@
 import express from 'express';
-import { Group, UserGroup } from '../models/Group';
+import { Group } from '../models/Group';
+import { UserGroup } from '../models/UserGroup';
 import { User } from '../models/User';
 import { authenticateToken } from '../middleware/auth';
 import { AuthRequest } from '../middleware/auth';
@@ -13,25 +14,20 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(401).json({ message: "User ID not found in token" });
     }
 
-    const user = await User.findByPk(req.user.id, {
-      include: [
-        {
-          model: Group,
-          as: 'groups',
-          through: { attributes: [] }
-        },
-        {
-          model: Group,
-          as: 'createdGroups'
-        }
-      ]
+    const userGroups = await UserGroup.findAll({
+      where: { userId: req.user.id },
+      include: [{ model: Group }]
     });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const createdGroups = await Group.findAll({
+      where: { creatorId: req.user.id }
+    });
 
-    const groups = [...user.groups, ...user.createdGroups];
+    const groups = [
+      ...userGroups.map(ug => ug.groupId),
+      ...createdGroups
+    ];
+
     res.json(groups);
   } catch (error) {
     console.error('Error retrieving groups:', error);
@@ -49,15 +45,21 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(401).json({ message: "User ID not found in token" });
     }
 
+    const { name } = req.body;
+
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ message: "Group name is required and must be a string" });
+    }
+
     const newGroup = await Group.create({
-      name: req.body.name,
+      name: name,
       creatorId: req.user.id
-    });
+    } as Group);
 
     await UserGroup.create({
       userId: req.user.id,
       groupId: newGroup.id
-    });
+    } as UserGroup);
 
     res.status(201).json(newGroup);
   } catch (error) {
@@ -77,7 +79,13 @@ router.post('/:groupId/users', authenticateToken, async (req: AuthRequest, res) 
     }
 
     const { username } = req.body;
-    const group = await Group.findByPk(req.params.groupId);
+    const groupId = parseInt(req.params.groupId);
+
+    if (isNaN(groupId)) {
+      return res.status(400).json({ message: "Invalid group ID" });
+    }
+
+    const group = await Group.findByPk(groupId);
 
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
@@ -93,10 +101,16 @@ router.post('/:groupId/users', authenticateToken, async (req: AuthRequest, res) 
       return res.status(404).json({ message: "User not found" });
     }
 
-    await UserGroup.create({
-      userId: userToAdd.id,
-      groupId: group.id
+    const [userGroup, created] = await UserGroup.findOrCreate({
+      where: {
+        userId: userToAdd.id,
+        groupId: group.id
+      }
     });
+
+    if (!created) {
+      return res.status(400).json({ message: "User is already in the group" });
+    }
 
     res.status(201).json({ message: "User added to group successfully" });
   } catch (error) {
@@ -115,7 +129,13 @@ router.get('/:groupId', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(401).json({ message: "User ID not found in token" });
     }
 
-    const group = await Group.findByPk(req.params.groupId, {
+    const groupId = parseInt(req.params.groupId);
+
+    if (isNaN(groupId)) {
+      return res.status(400).json({ message: "Invalid group ID" });
+    }
+
+    const group = await Group.findByPk(groupId, {
       include: [
         {
           model: User,
@@ -147,6 +167,51 @@ router.get('/:groupId', authenticateToken, async (req: AuthRequest, res) => {
     console.error('Error retrieving group details:', error);
     res.status(500).json({ 
       message: "Error retrieving group details", 
+      error: (error as Error).message 
+    });
+  }
+});
+
+// DELETE remove user from group
+router.delete('/:groupId/users/:userId', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User ID not found in token" });
+    }
+
+    const groupId = parseInt(req.params.groupId);
+    const userIdToRemove = parseInt(req.params.userId);
+
+    if (isNaN(groupId) || isNaN(userIdToRemove)) {
+      return res.status(400).json({ message: "Invalid group ID or user ID" });
+    }
+
+    const group = await Group.findByPk(groupId);
+
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    if (group.creatorId !== req.user.id && req.user.id !== userIdToRemove) {
+      return res.status(403).json({ message: "Not authorized to remove users from this group" });
+    }
+
+    const deleted = await UserGroup.destroy({
+      where: {
+        userId: userIdToRemove,
+        groupId: group.id
+      }
+    });
+
+    if (deleted === 0) {
+      return res.status(404).json({ message: "User is not in the group" });
+    }
+
+    res.status(200).json({ message: "User removed from group successfully" });
+  } catch (error) {
+    console.error('Error removing user from group:', error);
+    res.status(400).json({ 
+      message: "Error removing user from group", 
       error: (error as Error).message 
     });
   }

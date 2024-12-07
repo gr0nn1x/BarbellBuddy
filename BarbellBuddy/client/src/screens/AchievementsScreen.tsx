@@ -17,7 +17,7 @@ const AchievementsScreen = () => {
     const fetchAchievements = async () => {
       const token = await AsyncStorage.getItem('userToken');
       try {
-        const response = await axios.get('http://192.168.64.153:3000/api/achievements', {
+        const response = await axios.get('http://localhost:3000/api/achievements', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAchievements(response.data);
