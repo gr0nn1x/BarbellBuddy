@@ -13,6 +13,8 @@ import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
+import { adress } from '../navigation/types';
+
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -27,7 +29,7 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/login",
+        `http://${adress}/api/users/login`,
         { email, password }
       );
 

@@ -6,6 +6,8 @@ import { colors } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { adress } from '../navigation/types';
+
 
 interface Group {
   id: string;
@@ -15,7 +17,6 @@ interface Group {
 
 type GroupsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Groups'>;
 
-const API_URL = 'http://localhost:3000';
 
 const GroupsScreen = () => {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -29,7 +30,7 @@ const GroupsScreen = () => {
   const fetchGroups = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await axios.get(`${API_URL}/api/groups`, {
+      const response = await axios.get(`http://${adress}/api/groups`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setGroups(response.data);
@@ -47,7 +48,7 @@ const GroupsScreen = () => {
 
     try {
       const token = await AsyncStorage.getItem('userToken');
-      await axios.post(`${API_URL}/api/groups`, {
+      await axios.post(`http://${adress}/api/groups`, {
         name: newGroupName,
       }, {
         headers: { Authorization: `Bearer ${token}` },

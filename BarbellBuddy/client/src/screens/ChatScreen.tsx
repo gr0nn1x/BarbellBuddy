@@ -8,8 +8,9 @@ import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
+import { adress } from '../navigation/types';
 
-const API_URL = 'http://localhost:3000';
+
 
 type ChatScreenRouteProp = RouteProp<RootStackParamList, 'Chat'>;
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -58,7 +59,7 @@ export default function ChatScreen() {
       setUserId(cleanUserId);
 
       try {
-        await axios.get(`${API_URL}/api/users/verify`, {
+        await axios.get(`http://${adress}/api/users/verify`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -93,12 +94,12 @@ export default function ChatScreen() {
         setUserId(authUserId);
 
         try {
-          const response = await axios.get(`${API_URL}/api/chat/${friendId}`, {
+          const response = await axios.get(`http://${adress}/api/chat/${friendId}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setMessages(response.data);
 
-          socketRef.current = io(API_URL, {
+          socketRef.current = io(adress, {
             auth: { token },
             transports: ['websocket'],
             reconnection: true,

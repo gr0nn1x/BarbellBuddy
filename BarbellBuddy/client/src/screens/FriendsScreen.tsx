@@ -9,9 +9,7 @@ import { Friend, Lift } from '../types/friend';
 import { Button, Card, Avatar, ActivityIndicator } from 'react-native-paper';
 import { colors } from '../theme/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const API_URL = 'http://localhost:3000'; // Use this for iOS simulator
-// const API_URL = 'http://10.0.2.2:3000'; // Use this for Android emulator
+import { adress } from '../navigation/types';
 
 type FriendsScreenNavigationProp = StackNavigationProp<FriendsStackParamList & MainTabParamList, 'FriendsMain'>;
 
@@ -24,7 +22,7 @@ const FriendsScreen: React.FC = () => {
   const fetchFriends = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await axios.get<Friend[]>(`${API_URL}/api/friends`, {
+      const response = await axios.get<Friend[]>(`http://${adress}/api/friends`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFriends(response.data.sort((a, b) => a.friendUsername.localeCompare(b.friendUsername)));
@@ -55,7 +53,7 @@ const FriendsScreen: React.FC = () => {
         if (newFriend) {
           setFriends(prevFriends => {
             if (!prevFriends.some(friend => friend.id === newFriend.id)) {
-              return [...prevFriends, newFriend];
+              return [...prevFriends, newFriend].sort((a, b) => a.friendUsername.localeCompare(b.friendUsername));
             }
             return prevFriends;
           });
@@ -172,7 +170,7 @@ const FriendsScreen: React.FC = () => {
       ) : friends.length === 0 ? (
         <Card style={styles.emptyCard}>
           <Card.Content style={styles.emptyCardContent}>
-            <Icon name="dumbbell" size={48} color={colors.disabled} style={styles.emptyIcon} />
+            <Icon name="account-group" size={48} color={colors.disabled} style={styles.emptyIcon} />
             <Text style={styles.emptyText}>No friends added yet. Start by adding some friends!</Text>
           </Card.Content>
         </Card>

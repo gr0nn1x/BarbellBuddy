@@ -12,8 +12,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
+import { adress } from '../navigation/types';
 
-const API_URL = "http://localhost:3000"; // Use this for iOS
 
 const AddLiftScreen = () => {
   const [type, setType] = useState("");
@@ -28,7 +28,7 @@ const AddLiftScreen = () => {
     const token = await AsyncStorage.getItem("userToken");
     try {
       await axios.post(
-        `${API_URL}/api/lifts`,
+        `http://${adress}/api/lifts`,
         {
           type,
           weight: parseFloat(weight),

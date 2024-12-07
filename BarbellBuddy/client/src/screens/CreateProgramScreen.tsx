@@ -6,10 +6,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProgramsStackParamList } from '../navigation/types';
+import { adress } from '../navigation/types';
+
 
 type CreateProgramScreenNavigationProp = NativeStackNavigationProp<ProgramsStackParamList, 'CreateProgram'>;
 
-const API_URL = 'http://localhost:3000';
 
 interface WorkoutDay {
   day: string;
@@ -70,7 +71,7 @@ const CreateProgramScreen = () => {
 
     try {
       const token = await AsyncStorage.getItem('userToken');
-      await axios.post(`${API_URL}/api/programs`, {
+      await axios.post(`http://${adress}/api/programs`, {
         name: programName,
         workouts: workoutDays,
         isPrivate: false

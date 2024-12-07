@@ -7,10 +7,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { User } from '../types/user';
+import { adress } from '../navigation/types';
+
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const API_URL = 'http://localhost:3000';
 
 const ProfileScreen = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -21,7 +22,7 @@ const ProfileScreen = () => {
     const fetchUserData = async () => {
       const token = await AsyncStorage.getItem('userToken');
       try {
-        const response = await axios.get<User>(`${API_URL}/api/users/profile`, {
+        const response = await axios.get<User>(`http://${adress}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);

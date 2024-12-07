@@ -7,10 +7,11 @@ import { colors } from '../theme/colors';
 import { Program } from '../types/program';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProgramsStackParamList } from '../navigation/types';
+import { adress } from '../navigation/types';
+
 
 type WorkoutPlanningScreenNavigationProp = NativeStackNavigationProp<ProgramsStackParamList, 'ProgramsMain'>;
 
-const API_URL = 'http://localhost:3000';
 
 const WorkoutPlanningScreen = () => {
   const [programs, setPrograms] = useState<Program[]>([]);
@@ -23,7 +24,7 @@ const WorkoutPlanningScreen = () => {
   const fetchPrograms = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await axios.get(`${API_URL}/api/programs`, {
+      const response = await axios.get(`http://${adress}/api/programs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPrograms(response.data);

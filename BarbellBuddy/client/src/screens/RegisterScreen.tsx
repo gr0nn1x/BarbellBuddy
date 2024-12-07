@@ -6,10 +6,11 @@ import { colors } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { adress } from '../navigation/types';
+
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
 
-const API_URL = 'http://localhost:3000';
 
 const RegisterScreen = () => {
   const [username, setUsername] = useState('');
@@ -19,7 +20,7 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post(`${API_URL}/api/users/register`, { username, email, password });
+      const response = await axios.post(`http://${adress}/api/users/register`, { username, email, password });
       await AsyncStorage.setItem('userToken', response.data.token);
       navigation.replace('Main');
     } catch (error: any) {

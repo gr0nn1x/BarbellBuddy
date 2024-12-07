@@ -5,10 +5,11 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
 import { Program, Workout, Exercise } from '../types/program';
+import { adress } from '../navigation/types';
+
 
 type ProgramDetailRouteProp = RouteProp<{ ProgramDetail: { programId: string } }, 'ProgramDetail'>;
 
-const API_URL = 'http://localhost:3000';
 
 const ProgramDetailScreen = () => {
   const route = useRoute<ProgramDetailRouteProp>();
@@ -23,7 +24,7 @@ const ProgramDetailScreen = () => {
   const fetchProgram = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await axios.get(`${API_URL}/api/programs/${programId}`, {
+      const response = await axios.get(`http://${adress}/api/programs/${programId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProgram(response.data);
@@ -42,7 +43,7 @@ const ProgramDetailScreen = () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
       const updatedWorkouts = [...(program?.workouts || []), { name: newWorkoutName, exercises: [] }];
-      await axios.put(`${API_URL}/api/programs/${programId}`, {
+      await axios.put(`http://${adress}/api/programs/${programId}`, {
         ...program,
         workouts: updatedWorkouts,
       }, {
@@ -59,7 +60,7 @@ const ProgramDetailScreen = () => {
   const togglePrivacy = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-      await axios.put(`${API_URL}/api/programs/${programId}`, {
+      await axios.put(`http://${adress}/api/programs/${programId}`, {
         ...program,
         isPrivate: !program?.isPrivate,
       }, {

@@ -6,6 +6,8 @@ import { colors } from '../theme/colors';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { adress } from '../navigation/types';
+
 
 interface Lift {
   id: number;
@@ -18,7 +20,6 @@ interface Lift {
   description: string;
 }
 
-const API_URL = 'http://localhost:3000';
 
 const LiftsScreen = () => {
   const [lifts, setLifts] = useState<Lift[]>([]);
@@ -27,7 +28,7 @@ const LiftsScreen = () => {
   const fetchLifts = useCallback(async () => {
     const token = await AsyncStorage.getItem('userToken');
     try {
-      const response = await axios.get(`${API_URL}/api/lifts`, {
+      const response = await axios.get(`http://${adress}/api/lifts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLifts(response.data);

@@ -41,3 +41,5 @@ export type RootStackParamList = {
   ProgramDetail: { programId: string };
   GroupDetail: { groupId: string };
 };
+
+export const adress: string = "localhost:3000";

@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
+import { adress } from '../navigation/types';
 
 interface Achievement {
   id: number;
@@ -17,7 +18,7 @@ const AchievementsScreen = () => {
     const fetchAchievements = async () => {
       const token = await AsyncStorage.getItem('userToken');
       try {
-        const response = await axios.get('http://localhost:3000/api/achievements', {
+        const response = await axios.get(`http://${adress}/api/achievements`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAchievements(response.data);
