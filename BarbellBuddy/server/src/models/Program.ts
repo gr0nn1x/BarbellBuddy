@@ -16,6 +16,30 @@ export class Program extends Model<Program> {
   })
   name!: string;
 
+  @Column({
+    type: DataType.JSON,
+    allowNull: false,
+    defaultValue: [],
+  })
+  workouts!: {
+    name: string;
+    exercises: {
+      name: string;
+      sets: number;
+      reps: number;
+      weight: number;
+      rpe: number;
+      description: string;
+    }[];
+  }[];
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  })
+  isPrivate!: boolean;
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,

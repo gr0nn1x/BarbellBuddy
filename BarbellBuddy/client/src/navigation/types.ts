@@ -2,10 +2,12 @@ import { NavigatorScreenParams } from "@react-navigation/native";
 import { Friend } from "../types/friend";
 
 export type ProgramsStackParamList = {
-  ProgramsMain: undefined;
+  ProgramsMain: { refresh?: number };
   CreateProgram: undefined;
   ProgramDetail: { programId: string };
 };
+
+
 
 export type FriendsStackParamList = {
   FriendsMain: { newFriend?: Friend } | undefined;

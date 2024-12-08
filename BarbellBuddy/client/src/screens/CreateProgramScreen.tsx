@@ -8,13 +8,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProgramsStackParamList } from '../navigation/types';
 import { adress } from '../navigation/types';
 
-
 type CreateProgramScreenNavigationProp = NativeStackNavigationProp<ProgramsStackParamList, 'CreateProgram'>;
 
-
 interface WorkoutDay {
-  day: string;
-  date: string;
+  name: string;
   exercises: Exercise[];
 }
 
@@ -29,24 +26,22 @@ interface Exercise {
 
 const CreateProgramScreen = () => {
   const [programName, setProgramName] = useState('');
-  const [workoutDays, setWorkoutDays] = useState<WorkoutDay[]>([]);
+  const [workouts, setWorkouts] = useState<WorkoutDay[]>([]);
   const navigation = useNavigation<CreateProgramScreenNavigationProp>();
 
-  const addWorkoutDay = () => {
-    setWorkoutDays([...workoutDays, { day: '', date: '', exercises: [] }]);
+  const addWorkout = () => {
+    setWorkouts([...workouts, { name: '', exercises: [] }]);
   };
 
-  const updateWorkoutDay = (index: number, field: keyof WorkoutDay, value: string) => {
-    const updatedWorkoutDays = [...workoutDays];
-    if (field === 'day' || field === 'date') {
-      updatedWorkoutDays[index][field] = value;
-    }
-    setWorkoutDays(updatedWorkoutDays);
+  const updateWorkout = (index: number, name: string) => {
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[index].name = name;
+    setWorkouts(updatedWorkouts);
   };
 
-  const addExercise = (dayIndex: number) => {
-    const updatedWorkoutDays = [...workoutDays];
-    updatedWorkoutDays[dayIndex].exercises.push({
+  const addExercise = (workoutIndex: number) => {
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[workoutIndex].exercises.push({
       name: '',
       sets: '',
       reps: '',
@@ -54,13 +49,13 @@ const CreateProgramScreen = () => {
       rpe: '',
       description: '',
     });
-    setWorkoutDays(updatedWorkoutDays);
+    setWorkouts(updatedWorkouts);
   };
 
-  const updateExercise = (dayIndex: number, exerciseIndex: number, field: keyof Exercise, value: string) => {
-    const updatedWorkoutDays = [...workoutDays];
-    updatedWorkoutDays[dayIndex].exercises[exerciseIndex][field] = value;
-    setWorkoutDays(updatedWorkoutDays);
+  const updateExercise = (workoutIndex: number, exerciseIndex: number, field: keyof Exercise, value: string) => {
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[workoutIndex].exercises[exerciseIndex][field] = value;
+    setWorkouts(updatedWorkouts);
   };
 
   const createProgram = async () => {
@@ -73,7 +68,7 @@ const CreateProgramScreen = () => {
       const token = await AsyncStorage.getItem('userToken');
       await axios.post(`http://${adress}/api/programs`, {
         name: programName,
-        workouts: workoutDays,
+        workouts: workouts,
         isPrivate: false
       }, {
         headers: { Authorization: `Bearer ${token}` },
@@ -95,74 +90,68 @@ const CreateProgramScreen = () => {
         value={programName}
         onChangeText={setProgramName}
       />
-      {workoutDays.map((workoutDay, dayIndex) => (
-        <View key={dayIndex} style={styles.workoutDay}>
-          <Text style={styles.workoutDayTitle}>Workout Day {dayIndex + 1}</Text>
+      {workouts.map((workout, workoutIndex) => (
+        <View key={workoutIndex} style={styles.workoutDay}>
+          <Text style={styles.workoutDayTitle}>Workout {workoutIndex + 1}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Day of Week"
-            value={workoutDay.day}
-            onChangeText={(value) => updateWorkoutDay(dayIndex, 'day', value)}
+            placeholder="Workout Name"
+            value={workout.name}
+            onChangeText={(value) => updateWorkout(workoutIndex, value)}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Date"
-            value={workoutDay.date}
-            onChangeText={(value) => updateWorkoutDay(dayIndex, 'date', value)}
-          />
-          {workoutDay.exercises.map((exercise, exerciseIndex) => (
+          {workout.exercises.map((exercise, exerciseIndex) => (
             <View key={exerciseIndex} style={styles.exercise}>
               <Text style={styles.exerciseTitle}>Exercise {exerciseIndex + 1}</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Exercise Name"
                 value={exercise.name}
-                onChangeText={(value) => updateExercise(dayIndex, exerciseIndex, 'name', value)}
+                onChangeText={(value) => updateExercise(workoutIndex, exerciseIndex, 'name', value)}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Sets"
                 value={exercise.sets}
-                onChangeText={(value) => updateExercise(dayIndex, exerciseIndex, 'sets', value)}
+                onChangeText={(value) => updateExercise(workoutIndex, exerciseIndex, 'sets', value)}
                 keyboardType="numeric"
               />
               <TextInput
                 style={styles.input}
                 placeholder="Reps"
                 value={exercise.reps}
-                onChangeText={(value) => updateExercise(dayIndex, exerciseIndex, 'reps', value)}
+                onChangeText={(value) => updateExercise(workoutIndex, exerciseIndex, 'reps', value)}
                 keyboardType="numeric"
               />
               <TextInput
                 style={styles.input}
                 placeholder="Weight"
                 value={exercise.weight}
-                onChangeText={(value) => updateExercise(dayIndex, exerciseIndex, 'weight', value)}
+                onChangeText={(value) => updateExercise(workoutIndex, exerciseIndex, 'weight', value)}
                 keyboardType="numeric"
               />
               <TextInput
                 style={styles.input}
                 placeholder="RPE"
                 value={exercise.rpe}
-                onChangeText={(value) => updateExercise(dayIndex, exerciseIndex, 'rpe', value)}
+                onChangeText={(value) => updateExercise(workoutIndex, exerciseIndex, 'rpe', value)}
                 keyboardType="numeric"
               />
               <TextInput
                 style={styles.input}
                 placeholder="Description"
                 value={exercise.description}
-                onChangeText={(value) => updateExercise(dayIndex, exerciseIndex, 'description', value)}
+                onChangeText={(value) => updateExercise(workoutIndex, exerciseIndex, 'description', value)}
                 multiline
               />
             </View>
           ))}
-          <TouchableOpacity style={styles.addButton} onPress={() => addExercise(dayIndex)}>
+          <TouchableOpacity style={styles.addButton} onPress={() => addExercise(workoutIndex)}>
             <Text style={styles.addButtonText}>Add Exercise</Text>
           </TouchableOpacity>
         </View>
       ))}
-      <TouchableOpacity style={styles.addButton} onPress={addWorkoutDay}>
-        <Text style={styles.addButtonText}>Add Workout Day</Text>
+      <TouchableOpacity style={styles.addButton} onPress={addWorkout}>
+        <Text style={styles.addButtonText}>Add Workout</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.createButton} onPress={createProgram}>
         <Text style={styles.createButtonText}>Create Program</Text>

@@ -3,6 +3,8 @@ export interface Exercise {
     sets: number;
     reps: number;
     weight: number;
+    rpe: number; // Add the rpe property
+    description: string; // Add the description property
   }
   
   export interface Workout {
