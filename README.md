@@ -1,3 +1,14 @@
-# BarbellBuddy
-BarbellBuddy is a React Native with Express backend and PostGreSQL Databse Mobile application, Specialized at Tracking Your Lifts and Progress in the Gym and sharing it with Your buddies, The app features Lift tracking, Program creating and sharing, Achievemnts, and Group chats with your friends. Development has begun on the 1st of December 2024
-![alt text](https://github.com/gr0nn1x/BarbellBuddy/blob/main/BarbellBuddy/BarbellBuddyLogo.png?raw=true)
+# BarbellBuddy  
+BarbellBuddy is a **React Native** mobile application with an **Express** backend and **PostgreSQL** database. It is designed to help you **track your lifts**, monitor your **progress** in the gym, and share your achievements with friends.  
+
+### Features:  
+- **Lift Tracking:** Keep an accurate record of your gym sessions.  
+- **Program Creation and Sharing:** Design workout programs and share them with your buddies.  
+- **Achievements:** Celebrate milestones and personal bests.  
+- **Group Chats:** Stay connected with your friends and gym community.  
+
+Development began on **December 1st, 2024**.  
+
+<img src="https://github.com/gr0nn1x/BarbellBuddy/blob/main/BarbellBuddy/BarbellBuddyLogo.png?raw=true" alt="BarbellBuddy Logo" width="300" />  
+
+---
